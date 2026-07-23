@@ -1,0 +1,16 @@
+model BroadcastThread {
+  id            Int       @id @default(autoincrement())
+  broadcastId   Int
+  broadcast     Broadcast @relation(fields: [broadcastId], references: [id])
+  buyerId       Int
+  buyer         User      @relation("BroadcastThreadBuyer", fields: [buyerId], references: [id])
+  sellerId      Int
+  seller        User      @relation("BroadcastThreadSeller", fields: [sellerId], references: [id])
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  messages BroadcastMessage[]
+
+  @@unique([broadcastId, sellerId])
+}

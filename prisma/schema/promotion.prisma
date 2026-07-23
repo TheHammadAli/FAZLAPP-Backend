@@ -1,0 +1,17 @@
+model Promotion {
+  id             Int                 @id @default(autoincrement())
+  subscriptionId Int?
+  subscription   Subscription?       @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  targetType     PromotionTargetType
+  targetId       Int
+  startDate      DateTime
+  endDate        DateTime
+  status         PromotionStatus     @default(active)
+  isAutoRenew    Boolean             @default(false)
+  isInFeed       Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([subscriptionId])
+  @@index([targetId, targetType])
+}

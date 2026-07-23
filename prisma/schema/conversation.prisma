@@ -1,0 +1,15 @@
+model Conversation {
+  id            Int                @id @default(autoincrement())
+  buyerId       Int
+  buyer         User               @relation("ConversationBuyer", fields: [buyerId], references: [id])
+  sellerId      Int
+  seller        User               @relation("ConversationSeller", fields: [sellerId], references: [id])
+  status        ConversationStatus @default(open)
+  lastMessageAt DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  messages Message[]
+
+  @@unique([buyerId, sellerId])
+}

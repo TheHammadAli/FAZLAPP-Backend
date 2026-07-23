@@ -1,0 +1,15 @@
+model CategoryRequest {
+  id            Int                   @id @default(autoincrement())
+  name          String
+  description   String?
+  requestedById Int
+  requestedBy   User                  @relation("CategoryRequestRequestedBy", fields: [requestedById], references: [id])
+  status        CategoryRequestStatus @default(pending)
+  reviewedById  Int?
+  reviewedBy    User?                 @relation("CategoryRequestReviewedBy", fields: [reviewedById], references: [id])
+  adminComment  String?
+  createdAt     DateTime              @default(now())
+  reviewedAt    DateTime?
+
+  @@index([requestedById])
+}

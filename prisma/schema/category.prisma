@@ -1,0 +1,16 @@
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        Json
+  description Json?
+  parameters  Json?        @default("{\"en\":[],\"ur\":[]}")
+  sortNumber  Int          @default(0)
+  isDisabled  Boolean      @default(false)
+  icon        String?
+  type        CategoryType
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  products   Product[]
+  services   Service[]
+  broadcasts Broadcast[]
+}

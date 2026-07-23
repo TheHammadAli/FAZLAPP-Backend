@@ -1,0 +1,23 @@
+model Broadcast {
+  id             Int              @id @default(autoincrement())
+  buyerId        Int
+  buyer          User             @relation(fields: [buyerId], references: [id])
+  message        String
+  address        String?
+  purpose        BroadcastPurpose
+  categoryId     Int?
+  category       Category?        @relation(fields: [categoryId], references: [id])
+  radius         Float
+  latitude       Float
+  longitude      Float
+  type           ItemType
+  expiresAt      DateTime?
+  lastResponseAt DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  threads  BroadcastThread[]
+  messages BroadcastMessage[]
+
+  @@index([buyerId, createdAt])
+}

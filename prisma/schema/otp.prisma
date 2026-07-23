@@ -1,0 +1,9 @@
+model Otp {
+  id          Int       @id @default(autoincrement())
+  phoneNumber String?
+  email       String?
+  code        String
+  createdAt   DateTime
+  type        String    @default("phone")
+  expiresAt   DateTime?
+}

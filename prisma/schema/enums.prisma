@@ -1,0 +1,113 @@
+// ---------- Enums ----------
+
+enum Role {
+  buyer
+  seller
+  admin
+  subadmin
+}
+
+enum OwnerModel {
+  Shop
+  User
+}
+
+enum ItemType {
+  product
+  service
+}
+
+enum ProductType {
+  retail
+  classified
+}
+
+enum DeliveryOption {
+  self_pickup @map("self-pickup")
+  delivery
+}
+
+enum ServicePaymentType {
+  hourly
+  fixed
+  call_for_price
+}
+
+enum ServiceRequestStatus {
+  pending
+  accepted
+  rejected
+  proposed
+  cancelled
+  confirmed
+}
+
+enum ServiceJobStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum CategoryType {
+  service
+  product
+}
+
+enum CategoryRequestStatus {
+  pending
+  approved
+  rejected
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  shipped
+  delivered
+  cancelled
+}
+
+enum OrderPaymentType {
+  cashonDelivery
+  Easypaisa
+}
+
+enum PromotionTargetType {
+  Product
+  Shop
+  Service
+}
+
+enum PromotionStatus {
+  active
+  expired
+  cancelled
+  scheduled
+}
+
+enum NotificationType {
+  ORDER
+  MESSAGE
+  PROMOTION
+  SERVICE_REQUEST
+}
+
+enum BroadcastPurpose {
+  Buying
+  Selling
+}
+
+enum ConversationStatus {
+  open
+  closed
+}
+
+enum SubscriptionTargetType {
+  Product
+  Shop
+}
+
+enum SubscriptionScreenType {
+  listing
+  feed
+}

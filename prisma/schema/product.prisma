@@ -1,0 +1,30 @@
+model Product {
+  id             Int         @id @default(autoincrement())
+  shopId         Int?
+  shop           Shop?       @relation(fields: [shopId], references: [id])
+  ownerId        Int?
+  owner          User?       @relation(fields: [ownerId], references: [id])
+  title          String
+  description    String?
+  price          Float
+  categoryId     Int
+  category       Category    @relation(fields: [categoryId], references: [id])
+  type           ProductType
+  images         String[]    @default([])
+  video          String?
+  latitude       Float
+  longitude      Float
+  parameters     Json?       @default("[]")
+  isDeleted      Boolean     @default(false)
+  isDisabled     Boolean     @default(false)
+  searchableTags String[]    @default([])
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  orders Order[]
+
+  @@index([shopId])
+  @@index([ownerId])
+  @@index([categoryId])
+  @@index([searchableTags])
+}

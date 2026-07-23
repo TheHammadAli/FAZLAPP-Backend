@@ -1,0 +1,40 @@
+<!-- test.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Socket.IO Chat Test</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const socket = io('http://localhost:3000', {
+        transports: ['websocket'],
+      });
+
+      socket.on('connect', () => {
+        console.log('Connected:', socket.id);
+
+        // Join a conversation
+        socket.emit('joinConversation', { conversationId: '123' });
+
+        // Send a message
+        socket.emit('sendMessage', {
+          conversationId: '123',
+          senderId: 'user1',
+          receiverId: 'user2',
+          text: 'Hello!',
+        });
+
+        // Listen for messages
+        socket.on('receiveMessage', (msg) => {
+          console.log('New message:', msg);
+        });
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected');
+      });
+    </script>
+  </body>
+</html>

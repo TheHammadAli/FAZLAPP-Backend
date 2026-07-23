@@ -1,0 +1,43 @@
+model User {
+  id                   Int       @id @default(autoincrement())
+  name                 String?
+  email                String    @unique
+  password             String?
+  roles                Role[]    @default([buyer])
+  phone                String?   @unique
+  language             String    @default("en")
+  isVerified           Boolean   @default(false)
+  latitude             Float?
+  longitude            Float?
+  refreshToken         String?
+  resetPasswordToken   String?
+  image                String?   @default("default-avatar.png")
+  resetPasswordExpires DateTime?
+  provider             String?
+  address              String?
+  fcmToken             String?
+  isDisabled           Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  shops                     Shop[]
+  productsOwned             Product[]
+  servicesOwned             Service[]
+  serviceRequestsAsCustomer ServiceRequest[]   @relation("ServiceRequestCustomer")
+  serviceRequestsAsProvider ServiceRequest[]   @relation("ServiceRequestProvider")
+  ordersAsBuyer             Order[]
+  reviews                   Review[]
+  likes                     Like[]
+  notifications             Notification[]
+  categoryRequestsMade      CategoryRequest[]  @relation("CategoryRequestRequestedBy")
+  categoryRequestsReviewed  CategoryRequest[]  @relation("CategoryRequestReviewedBy")
+  conversationsAsBuyer      Conversation[]     @relation("ConversationBuyer")
+  conversationsAsSeller     Conversation[]     @relation("ConversationSeller")
+  messagesSent              Message[]          @relation("MessageSender")
+  messagesReceived          Message[]          @relation("MessageReceiver")
+  broadcastsMade            Broadcast[]
+  broadcastThreadsAsBuyer   BroadcastThread[]  @relation("BroadcastThreadBuyer")
+  broadcastThreadsAsSeller  BroadcastThread[]  @relation("BroadcastThreadSeller")
+  broadcastMessagesSent     BroadcastMessage[] @relation("BroadcastMessageSender")
+  broadcastMessagesReceived BroadcastMessage[] @relation("BroadcastMessageReceiver")
+}

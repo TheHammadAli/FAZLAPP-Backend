@@ -1,0 +1,13 @@
+model Like {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+  itemId     Int
+  itemType   ItemType
+  ownerModel OwnerModel
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([userId, itemId, itemType])
+  @@index([itemId, itemType])
+}

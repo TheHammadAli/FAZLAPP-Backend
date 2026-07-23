@@ -1,0 +1,19 @@
+model Shop {
+  id          Int      @id @default(autoincrement())
+  ownerId     Int
+  owner       User     @relation(fields: [ownerId], references: [id])
+  title       String
+  image       String?
+  banner      String?
+  address     String?
+  description String
+  isDisabled  Boolean  @default(false)
+  latitude    Float
+  longitude   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+
+  @@index([ownerId])
+}

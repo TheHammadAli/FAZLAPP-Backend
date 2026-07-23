@@ -1,0 +1,21 @@
+model Order {
+  id             Int              @id @default(autoincrement())
+  buyerId        Int
+  buyer          User             @relation(fields: [buyerId], references: [id])
+  owner          Int
+  ownerModel     OwnerModel
+  productId      Int
+  product        Product          @relation(fields: [productId], references: [id])
+  deliveryOption DeliveryOption
+  status         OrderStatus      @default(pending)
+  paymentType    OrderPaymentType @default(cashonDelivery)
+  amount         Float
+  quantity       Float
+  variant        Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([buyerId])
+  @@index([productId])
+  @@index([owner, ownerModel])
+}

@@ -1,0 +1,13 @@
+model Subscription {
+  id             Int                    @id @default(autoincrement())
+  targetType     SubscriptionTargetType
+  name           String
+  price          Float
+  durationInDays Float
+  screenType     SubscriptionScreenType @default(listing)
+  description    String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  promotions Promotion[]
+}

@@ -1,0 +1,22 @@
+model ServiceRequest {
+  id                Int                  @id @default(autoincrement())
+  serviceId         Int
+  service           Service              @relation(fields: [serviceId], references: [id])
+  customerId        Int
+  customer          User                 @relation("ServiceRequestCustomer", fields: [customerId], references: [id])
+  providerId        Int
+  provider          User                 @relation("ServiceRequestProvider", fields: [providerId], references: [id])
+  requestedDateTime DateTime
+  proposedDateTime  DateTime?
+  status            ServiceRequestStatus @default(pending)
+  jobStatus         ServiceJobStatus     @default(not_started)
+  message           String?
+  completedAt       DateTime?
+  startedAt         DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([serviceId])
+  @@index([customerId])
+  @@index([providerId])
+}
