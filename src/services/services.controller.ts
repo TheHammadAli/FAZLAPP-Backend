@@ -109,8 +109,22 @@ export class ServicesController {
     }
 
     dto.parameters = JSON.parse(
-      dto.parameters?.toString() || "{}",
+      dto.parameters?.toString() || "[]",
     );
+
+    dto.price = Number(dto.price);
+    dto.category = Number(dto.category);
+    if (Number.isNaN(dto.price)) {
+      throw new BadRequestException("price must be a valid number");
+    }
+    if (Number.isNaN(dto.category)) {
+      throw new BadRequestException("category must be a valid category id");
+    }
+    if (dto.requiresAppointment !== undefined) {
+      dto.requiresAppointment =
+        dto.requiresAppointment === true ||
+        (dto.requiresAppointment as unknown) === "true";
+    }
 
     return await this.servicesService.create(user.sub, dto);
   }
@@ -144,8 +158,26 @@ export class ServicesController {
     }
 
     dto.parameters = JSON.parse(
-      dto.parameters?.toString() || "{}",
+      dto.parameters?.toString() || "[]",
     );
+
+    if (dto.price !== undefined) {
+      dto.price = Number(dto.price);
+      if (Number.isNaN(dto.price)) {
+        throw new BadRequestException("price must be a valid number");
+      }
+    }
+    if (dto.category !== undefined) {
+      dto.category = Number(dto.category);
+      if (Number.isNaN(dto.category)) {
+        throw new BadRequestException("category must be a valid category id");
+      }
+    }
+    if (dto.requiresAppointment !== undefined) {
+      dto.requiresAppointment =
+        dto.requiresAppointment === true ||
+        (dto.requiresAppointment as unknown) === "true";
+    }
 
     return await this.servicesService.update(Number(serviceId), dto);
   }
