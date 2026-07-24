@@ -264,6 +264,7 @@ export class ChatService {
       LEFT JOIN LATERAL (
         SELECT jsonb_build_object(
           'text', m.text,
+          'imageUrl', m."imageUrl",
           'read', m.read,
           'createdAt', m."createdAt",
           'sender', jsonb_build_object('_id', mu.id, 'name', mu.name)
@@ -277,7 +278,7 @@ export class ChatService {
       LEFT JOIN LATERAL (
         SELECT COUNT(*)::int as unread_count
         FROM "Message" um
-        WHERE um."conversationId" = c.id AND um."receiverId" = ${userId} AND um.read = false
+        WHERE um."conversationId" = c.id AND um."receiverId" = ${userId} AND um."senderId" != ${userId} AND um.read = false
       ) uc ON true
       WHERE c."buyerId" = ${userId} OR c."sellerId" = ${userId}
       ORDER BY COALESCE((lm.latest_message->>'createdAt')::timestamptz, c."lastMessageAt") DESC NULLS LAST
