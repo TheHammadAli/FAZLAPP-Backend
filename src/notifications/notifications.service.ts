@@ -142,6 +142,8 @@ export class NotificationsService {
       );
     }
 
+    page = Number(page) || 1;
+    limit = Number(limit) || 10;
     const skip = (page - 1) * limit;
 
     const total = await this.prisma.notification.count({ where: { userId } });
