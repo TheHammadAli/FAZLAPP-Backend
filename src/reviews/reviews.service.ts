@@ -68,7 +68,10 @@ export class ReviewService {
    * Paginated review list for a given item (product or service)
    */
   async getReviews(query: QueryReviewDto) {
-    const { itemId, itemType, page = 1, limit = 10 } = query;
+    const itemId = Number(query.itemId);
+    const { itemType } = query;
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
 
     const [reviews, total] = await Promise.all([
       this.prisma.review.findMany({

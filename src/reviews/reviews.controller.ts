@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   UseGuards,
+  BadRequestException,
 } from "@nestjs/common";
 import { ReviewService } from "./reviews.service";
 import { CreateReviewDto } from "./dto/create-review.dto";
@@ -34,6 +35,16 @@ export class ReviewController {
   @ApiOperation({ summary: "Create a review" })
   @ApiBody({ type: CreateReviewDto })
   async createReview(@Body() dto: CreateReviewDto) {
+    dto.userId = Number(dto.userId);
+    dto.itemId = Number(dto.itemId);
+    dto.rating = Number(dto.rating);
+    if (
+      Number.isNaN(dto.userId) ||
+      Number.isNaN(dto.itemId) ||
+      Number.isNaN(dto.rating)
+    ) {
+      throw new BadRequestException("userId, itemId and rating must be valid numbers");
+    }
     return this.reviewService.createReview(dto);
   }
 
