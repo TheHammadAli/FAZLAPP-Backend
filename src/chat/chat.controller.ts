@@ -8,6 +8,7 @@ import {
   Patch,
   UploadedFile,
   UseInterceptors,
+  BadRequestException,
 } from "@nestjs/common";
 import { ChatService } from "./chat.service";
 import { PaginationDto } from "src/common/dto/pagination.dto";
@@ -46,10 +47,12 @@ export class ChatController {
   async getOrCreateConversation(
     @Body() body: { buyerId: number; sellerId: number },
   ) {
-    return this.chatService.getOrCreateConversation(
-      body.buyerId,
-      body.sellerId,
-    );
+    const buyerId = Number(body.buyerId);
+    const sellerId = Number(body.sellerId);
+    if (Number.isNaN(buyerId) || Number.isNaN(sellerId)) {
+      throw new BadRequestException("buyerId and sellerId must be valid user ids");
+    }
+    return this.chatService.getOrCreateConversation(buyerId, sellerId);
   }
 
   @Post("message")
@@ -76,21 +79,33 @@ export class ChatController {
     @Body() body: CreateMessageDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    console.log("File received in controller:", file);
+    const conversationId = Number(body.conversationId);
+    const senderId = Number(body.senderId);
+    const receiverId = Number(body.receiverId);
+    if (
+      Number.isNaN(conversationId) ||
+      Number.isNaN(senderId) ||
+      Number.isNaN(receiverId)
+    ) {
+      throw new BadRequestException(
+        "conversationId, senderId and receiverId must be valid ids",
+      );
+    }
+
     // If a file is provided, upload it first
     let imageUrl: string | undefined;
 
     if (file && file.size > 0) {
       imageUrl = await this.fileUploadService.uploadChatMessage(
-        body.conversationId,
+        conversationId,
         file,
       );
     }
 
     return this.chatService.sendMessage(
-      body.conversationId,
-      body.senderId,
-      body.receiverId,
+      conversationId,
+      senderId,
+      receiverId,
       body.text,
       imageUrl,
     );
@@ -119,7 +134,12 @@ export class ChatController {
     },
   })
   async markAsRead(@Body() body: { conversationId: number; userId: number }) {
-    return this.chatService.markAsRead(body.conversationId, body.userId);
+    const conversationId = Number(body.conversationId);
+    const userId = Number(body.userId);
+    if (Number.isNaN(conversationId) || Number.isNaN(userId)) {
+      throw new BadRequestException("conversationId and userId must be valid ids");
+    }
+    return this.chatService.markAsRead(conversationId, userId);
   }
 
   @Get("messages/unread/:userId")
