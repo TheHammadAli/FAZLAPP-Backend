@@ -256,7 +256,8 @@ export class ChatService {
         c.id, c."buyerId", c."sellerId", c.status, c."lastMessageAt", c."createdAt", c."updatedAt",
         jsonb_build_object('_id', b.id, 'name', b.name, 'email', b.email, 'image', b.image) as buyer,
         jsonb_build_object('_id', s.id, 'name', s.name, 'email', s.email, 'image', s.image) as seller,
-        lm.latest_message as "latestMessage"
+        lm.latest_message as "latestMessage",
+        COALESCE(uc.unread_count, 0)::int as "unreadCount"
       FROM "Conversation" c
       JOIN "User" b ON b.id = c."buyerId"
       JOIN "User" s ON s.id = c."sellerId"
@@ -273,6 +274,11 @@ export class ChatService {
         ORDER BY m."createdAt" DESC
         LIMIT 1
       ) lm ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*)::int as unread_count
+        FROM "Message" um
+        WHERE um."conversationId" = c.id AND um."receiverId" = ${userId} AND um.read = false
+      ) uc ON true
       WHERE c."buyerId" = ${userId} OR c."sellerId" = ${userId}
       ORDER BY COALESCE((lm.latest_message->>'createdAt')::timestamptz, c."lastMessageAt") DESC NULLS LAST
       LIMIT ${limit} OFFSET ${skip}
