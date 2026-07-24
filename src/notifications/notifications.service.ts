@@ -181,6 +181,13 @@ export class NotificationsService {
     }
   }
 
+  async markAllAsRead(userId: number) {
+    await this.prisma.notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
+  }
+
   async delete(id: number) {
     try {
       await this.prisma.notification.delete({ where: { id } });
