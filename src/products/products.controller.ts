@@ -178,7 +178,9 @@ export class ProductsController {
   async getProductsWithVideos(
     @Query() query: GetWithVideosDto,
   ): Promise<PaginatedResponseDto<any>> {
-    return this.productsService.getProductsWithVideos(query, query?.userId, query.category);
+    const userId = query?.userId ? Number(query.userId) : undefined;
+    const category = query?.category ? Number(query.category) : undefined;
+    return this.productsService.getProductsWithVideos(query, userId, category);
   }
 
   @Get("detail/:id")

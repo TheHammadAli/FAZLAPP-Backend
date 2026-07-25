@@ -225,7 +225,7 @@ export class ChatService {
 
     const grouped = await this.prisma.message.groupBy({
       by: ["conversationId"],
-      where: { receiverId: userId, read: false },
+      where: { receiverId: userId, senderId: { not: userId }, read: false },
       _count: { _all: true },
       _max: { createdAt: true },
     });
