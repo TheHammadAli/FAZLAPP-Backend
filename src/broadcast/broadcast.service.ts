@@ -487,6 +487,8 @@ export class BroadcastService {
     page = 1,
     limit = 10,
   ): Promise<PaginatedResponseDto<any>> {
+    page = Number(page) || 1;
+    limit = Number(limit) || 10;
     const skip = (page - 1) * limit;
 
     const [threads, total] = await Promise.all([

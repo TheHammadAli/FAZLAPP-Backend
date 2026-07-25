@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseInterceptors,
   UploadedFiles,
+  BadRequestException,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -65,6 +66,12 @@ export class BroadcastController {
       location = typeof dto.location === "string"
         ? JSON.parse(dto.location)
         : dto.location;
+    }
+
+    dto.categoryId = Number(dto.categoryId);
+    dto.radius = Number(dto.radius);
+    if (Number.isNaN(dto.categoryId) || Number.isNaN(dto.radius)) {
+      throw new BadRequestException("categoryId and radius must be valid numbers");
     }
 
 
