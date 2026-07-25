@@ -266,7 +266,7 @@ export class ChatService {
           'text', m.text,
           'imageUrl', m."imageUrl",
           'read', m.read,
-          'createdAt', m."createdAt",
+          'createdAt', to_char(m."createdAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
           'sender', jsonb_build_object('_id', mu.id, 'name', mu.name)
         ) as latest_message
         FROM "Message" m
