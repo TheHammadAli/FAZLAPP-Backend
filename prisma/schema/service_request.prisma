@@ -10,6 +10,7 @@ model ServiceRequest {
   proposedDateTime  DateTime?
   status            ServiceRequestStatus @default(pending)
   jobStatus         ServiceJobStatus     @default(not_started)
+  jobNumber         Int?
   message           String?
   completedAt       DateTime?
   startedAt         DateTime?

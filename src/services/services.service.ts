@@ -731,6 +731,13 @@ export class ServicesService {
         );
     }
 
+    if (
+      (data.status === "accepted" || data.status === "confirmed") &&
+      !request.jobNumber
+    ) {
+      data.jobNumber = await this.generateUniqueJobNumber();
+    }
+
     // 3. Perform the DB operation (the source of truth)
     await this.prisma.serviceRequest.update({ where: { id: requestId }, data });
 
@@ -758,6 +765,28 @@ export class ServicesService {
         requestId,
       },
     };
+  }
+
+  /**
+   * 4-digit job numbers are only guaranteed unique among currently-active jobs
+   * (accepted/confirmed and not yet completed) — a number frees up for reuse
+   * once that job is completed/cancelled, since the space is only 1000-9999.
+   */
+  private async generateUniqueJobNumber(): Promise<number> {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const candidate = Math.floor(1000 + Math.random() * 9000);
+      const existing = await this.prisma.serviceRequest.findFirst({
+        where: {
+          jobNumber: candidate,
+          status: { in: ["accepted", "confirmed"] },
+          jobStatus: { in: ["not_started", "in_progress"] },
+        },
+      });
+      if (!existing) return candidate;
+    }
+    throw new BadRequestException(
+      "Unable to allocate a job number, please try again",
+    );
   }
 
   async updateJobStatus(dto: UpdateJobStatusDto) {
@@ -839,6 +868,8 @@ export class ServicesService {
     jobStatus?: string,
     status?: string,
   ): Promise<PaginatedResponseDto<any>> {
+    page = Number(page) || 1;
+    limit = Number(limit) || 10;
     const skip = (page - 1) * limit;
     const where: any = {};
 
@@ -882,13 +913,6 @@ export class ServicesService {
       this.prisma.serviceRequest.count({ where }),
     ]);
 
-    if (!requests || requests.length === 0) {
-      throw new NotFoundException(
-        this.i18n.translate("auth.services.no_requests_found", {
-          lang: this.lang,
-        }),
-      );
-    }
     return {
       meta: {
         total,
@@ -1043,7 +1067,8 @@ export class ServicesService {
     jobStatus?: string,
     status?: string,
   ): Promise<PaginatedResponseDto<any>> {
-    const { page = 1, limit = 10 } = paginationDto;
+    const page = Number(paginationDto.page) || 1;
+    const limit = Number(paginationDto.limit) || 10;
     const skip = (page - 1) * limit;
 
     const existingCustomer = await this.userService.findUserById(customerId);
