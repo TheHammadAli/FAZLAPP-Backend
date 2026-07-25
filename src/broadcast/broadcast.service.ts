@@ -388,7 +388,7 @@ export class BroadcastService {
       LEFT JOIN LATERAL (
         SELECT jsonb_build_object(
           'message', bm.message,
-          'createdAt', bm."createdAt",
+          'createdAt', to_char(bm."createdAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
           'sender', jsonb_build_object('_id', mu.id, 'name', mu.name)
         ) as latest_message
         FROM "BroadcastMessage" bm
@@ -452,7 +452,7 @@ export class BroadcastService {
       LEFT JOIN LATERAL (
         SELECT jsonb_build_object(
           'message', bm.message,
-          'createdAt', bm."createdAt",
+          'createdAt', to_char(bm."createdAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
           'imageUrls', bm."imageUrls",
           'sender', jsonb_build_object('_id', mu.id, 'name', mu.name, 'image', mu.image)
         ) as latest_message
@@ -509,7 +509,10 @@ export class BroadcastService {
 
     const data = await this.prisma.broadcast.findMany({
       where: { id: { in: broadcastIds } },
-      include: { category: true },
+      include: {
+        category: true,
+        buyer: { select: { id: true, name: true, image: true, email: true } },
+      },
     });
 
     // Maintain order and add threadId

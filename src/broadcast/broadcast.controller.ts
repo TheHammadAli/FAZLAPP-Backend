@@ -113,6 +113,12 @@ export class BroadcastController {
     const senderId = user.sub;
     const lang = (req.headers["accept-language"] || "en").split(",")[0];
 
+    dto.receiverId = Number(dto.receiverId);
+    dto.threadId = Number(dto.threadId);
+    if (Number.isNaN(dto.receiverId) || Number.isNaN(dto.threadId)) {
+      throw new BadRequestException("receiverId and threadId must be valid numbers");
+    }
+
     let imageUrl: string | undefined;
 
     if (file) {
