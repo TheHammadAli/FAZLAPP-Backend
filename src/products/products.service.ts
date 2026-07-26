@@ -205,7 +205,11 @@ export class ProductsService {
     shopId: number,
     paginationDto: PaginationDto,
   ): Promise<PaginatedResponseDto<any>> {
-    const { page = 1, limit = 10 } = paginationDto;
+    // page/limit arrive from @Query() as raw strings (no global transform
+    // pipe is registered), so they must be coerced before reaching Prisma —
+    // passing a string to `take` throws a Prisma validation error.
+    const page = Math.max(1, Number(paginationDto.page) || 1);
+    const limit = Math.max(1, Number(paginationDto.limit) || 10);
     const skip = (page - 1) * limit;
     const where = { shopId, isDeleted: false, isDisabled: false };
 
