@@ -208,6 +208,12 @@ export class OrdersService {
       totalPages: number;
     };
   }> {
+    // page/limit arrive from @Query() as raw strings (no global transform
+    // pipe is registered), so they must be coerced before reaching Prisma —
+    // passing a string to `take` throws a Prisma validation error.
+    page = Number(page) || 1;
+    limit = Number(limit) || 10;
+
     if (page < 1 || limit < 1)
       throw new BadRequestException(
         this.i18n.translate("auth.orders.invalid_page_limit", {
@@ -264,6 +270,12 @@ export class OrdersService {
       totalPages: number;
     };
   }> {
+    // page/limit arrive from @Query() as raw strings (no global transform
+    // pipe is registered), so they must be coerced before reaching Prisma —
+    // passing a string to `take` throws a Prisma validation error.
+    page = Number(page) || 1;
+    limit = Number(limit) || 10;
+
     const where: any = { buyerId };
 
     if (status) {

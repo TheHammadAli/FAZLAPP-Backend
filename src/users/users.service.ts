@@ -60,12 +60,27 @@ export class UsersService {
         );
       }
       const hashedPassword = await this.hashPassword(createUserDto.password);
-      const { location, image, ...rest } = createUserDto;
+      const { location, image, isVerified, roles, ...rest } = createUserDto;
       const coords = fromGeoJson(location as any);
+
+      // The signup form is submitted as multipart/form-data (it carries the
+      // profile image), so every field — including booleans and arrays —
+      // arrives as a plain string (e.g. isVerified: "true", roles: "buyer").
+      // No global transform pipe is registered, so they must be coerced here
+      // before reaching Prisma, which requires the real Boolean/enum-array types.
+      const isVerifiedBool =
+        typeof isVerified === "string" ? isVerified === "true" : !!isVerified;
+      const rolesArray = Array.isArray(roles)
+        ? roles
+        : roles
+          ? [roles]
+          : ["buyer"];
 
       let savedUser = await this.prisma.user.create({
         data: {
           ...rest,
+          isVerified: isVerifiedBool,
+          roles: rolesArray as any,
           image: "default-avatar.png",
           password: hashedPassword,
           ...(coords ?? {}),
@@ -235,7 +250,12 @@ export class UsersService {
   async getAllUsers(
     paginationDto: PaginationDto,
   ): Promise<PaginatedResponseDto<any>> {
-    const { page = 1, limit = 10, search } = paginationDto;
+    // page/limit arrive from @Query() as raw strings (no global transform
+    // pipe is registered), so they must be coerced before reaching Prisma —
+    // passing a string to `take` throws a Prisma validation error.
+    const { search } = paginationDto;
+    const page = Math.max(1, Number(paginationDto.page) || 1);
+    const limit = Math.max(1, Number(paginationDto.limit) || 10);
     const skip = (page - 1) * limit;
 
     const where: any = {};
