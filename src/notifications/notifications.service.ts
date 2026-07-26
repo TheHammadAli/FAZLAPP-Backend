@@ -102,12 +102,9 @@ export class NotificationsService {
 
     const notifPayload = this.buildNotificationPayload(payload);
 
-    const notif =
-      type !== "MESSAGE"
-        ? await this.create<T>(userId, translatedMessage, type, notifPayload as T)
-        : null;
+    const notif = await this.create<T>(userId, translatedMessage, type, notifPayload as T);
 
-    if (type !== "MESSAGE" && this.server && notif) {
+    if (this.server && notif) {
       this.server.to(userId.toString()).emit("notification", notif);
     }
 
