@@ -370,6 +370,11 @@ export class ServicesService {
     page: number = 1,
     limit: number = 10,
   ): Promise<PaginatedResponseDto<any>> {
+    // page/limit arrive from @Query() as raw strings (no global transform
+    // pipe is registered), so they must be coerced before reaching Prisma —
+    // passing a string to `take` throws a Prisma validation error.
+    page = Math.max(1, Number(page) || 1);
+    limit = Math.max(1, Number(limit) || 10);
     const skip = (page - 1) * limit;
     const where = { ownerId: userId, isDeleted: false, isDisabled: false };
 
@@ -386,9 +391,20 @@ export class ServicesService {
 
     const shaped = data.map((item: any) => {
       const { owner, ownerId, categoryId, latitude, longitude, ...rest } = item;
+      // Strip auth-sensitive fields before exposing the owner on this
+      // public endpoint — this previously leaked the password hash,
+      // refresh token, and reset-password token.
+      const {
+        password,
+        refreshToken,
+        resetPasswordToken,
+        resetPasswordExpires,
+        fcmToken,
+        ...ownerSafe
+      } = owner ?? {};
       return {
         ...rest,
-        ownerId: owner,
+        ownerId: owner ? ownerSafe : owner,
         location: toGeoJson(latitude, longitude),
       };
     });
