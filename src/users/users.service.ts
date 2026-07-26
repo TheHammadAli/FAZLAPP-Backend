@@ -202,6 +202,13 @@ export class UsersService {
         (restUpdate as any).longitude = coords.longitude;
       }
 
+      // This endpoint is submitted as multipart/form-data (it carries the
+      // profile image), so `roles` can arrive as a bare string (e.g.
+      // "buyer") instead of an array — Prisma requires the real Role[] type.
+      if (restUpdate.roles !== undefined && !Array.isArray(restUpdate.roles)) {
+        (restUpdate as any).roles = [restUpdate.roles];
+      }
+
       // NOTE: intentionally preserves a pre-existing bug — the original
       // Mongoose `findByIdAndUpdate` call here omits `{new: true}`, so it
       // (and this port) returns the PRE-update snapshot, not the saved one.
