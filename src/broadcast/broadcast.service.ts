@@ -349,13 +349,19 @@ export class BroadcastService {
       },
     });
 
+    // Emit to the thread room (for anyone actively viewing this thread) AND
+    // the receiver's own user room (always joined on connect, regardless of
+    // which page they're on) so delivery doesn't depend on them having
+    // already opened this specific broadcast thread.
+    const broadcastPayload = {
+      message: messageResults,
+      sender,
+      thread,
+    };
     this.broadcastGateway.server
       .to(String(threadId))
-      .emit("receiveMessage", {
-        message: messageResults,
-        sender,
-        thread,
-      });
+      .to(String(receiverId))
+      .emit("receiveBroadcastMessage", broadcastPayload);
 
     await this.notificationsService.createAndNotify(
       receiverId,

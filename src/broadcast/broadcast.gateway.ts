@@ -73,7 +73,7 @@ export class BroadcastGateway
       data.message,
     );
 
-    this.server.to(String(data.threadId)).emit("receiveMessage", newMessage);
+    this.server.to(String(data.threadId)).emit("receiveBroadcastMessage", newMessage);
     // Emit the message to all clients in the thread room
     return newMessage
   }
