@@ -409,8 +409,8 @@ export class BroadcastService {
     const messages = await this.prisma.broadcastMessage.findMany({
       where: { threadId },
       include: {
-        sender: { select: { name: true } },
-        receiver: { select: { name: true } },
+        sender: { select: { id: true, name: true } },
+        receiver: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: "asc" },
     });
