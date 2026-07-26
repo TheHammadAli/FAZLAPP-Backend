@@ -357,6 +357,24 @@ export class BroadcastService {
         thread,
       });
 
+    await this.notificationsService.createAndNotify(
+      receiverId,
+      "chat.new_message",
+      "MESSAGE",
+      {
+        isBroadcastMessage: true,
+        broadcastThreadId: threadId,
+        message: {
+          id: messageResults.id,
+          text: messageResults.message,
+          imageUrl: messageResults.imageUrls?.[0] ?? null,
+          createdAt: messageResults.createdAt,
+        },
+        sender: { id: sender.id, name: sender.name },
+      },
+      { senderName: sender.name },
+    );
+
 
     return {
       data: {
